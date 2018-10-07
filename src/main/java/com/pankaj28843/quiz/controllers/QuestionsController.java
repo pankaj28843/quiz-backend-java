@@ -12,30 +12,37 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.pankaj28843.quiz.models.Choice;
 import com.pankaj28843.quiz.models.Question;
-import com.pankaj28843.quiz.repositories.QuestionRepository;
+import com.pankaj28843.quiz.service.QuestionService;
 
 @RestController
 @RequestMapping("/api/v1/questions")
 public class QuestionsController {
 	@Autowired
-	private QuestionRepository questionRepository;
-	
+	private QuestionService questionService;
+
 	@GetMapping
 	public List<Question> list() {
-		return questionRepository.findAll();
+		return questionService.findAll();
 	}
 
 	@PostMapping
 	@ResponseStatus(HttpStatus.OK)
 	public void create(@RequestBody Question question) {
-		questionRepository.save(question);
+		questionService.save(question);
 
 	}
-	
+
 	@GetMapping("/{id}")
 	public Question get(@PathVariable("id") long id) {
-		return questionRepository.getOne(id);
+		return questionService.getById(id);
+	}
+
+	@PostMapping("/{id}/set-choices")
+	public void setChoices(@PathVariable("id") long id, @RequestBody List<Choice> newChoices) {
+		Question question = questionService.getById(id);
+		questionService.setChoices(question, newChoices);
 	}
 
 }
